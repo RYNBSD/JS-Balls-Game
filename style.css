@@ -1,0 +1,48 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+html,
+body,
+#app {
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  background-color: black;
+}
+
+#score {
+  position: absolute;
+  top: 1%;
+  left: 1%;
+  font-size: xx-large;
+  color: white;
+}
+
+#menu {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50vw;
+  background-color: white;
+  border-radius: 20px;
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+#start {
+  border: none;
+  background-color: rgb(52, 81, 179);
+  border-radius: 20px;
+  font-size: larger;
+  color: white;
+  padding: 10px;
+}
