@@ -1,5 +1,5 @@
 import "./style.css";
-import { Player, Shot, Particle, Enemy } from "./ball";
+import { Enemy, Particle, Player, Shot } from "./ball";
 
 const HIGH_SCORE = "high-score";
 
@@ -23,7 +23,6 @@ class Game {
       mouse: null,
       enemy: null,
     };
-
     this.enemyRadius = {
       min: 5,
       max: 30,
@@ -37,41 +36,32 @@ class Game {
     this.prevAnimateTime = 0;
   }
 
-  restart() {
-    clearInterval(this.interval.mouse);
-    clearInterval(this.interval.enemy);
-    this.init();
-  }
-
   handlePlayer() {
     this.keysPressed.forEach((key) => this.player.update(this.delta, key));
   }
 
-  handleShots() {
-    this.shots.forEach((shot, i) => {
+  handleShot() {
+    for (let i = 0; i < this.shots.length; i++) {
+      const shot = this.shots[i];
       if (
         shot.x + shot.radius <= 0 ||
         shot.x + shot.radius >= this.canvas.width
       ) {
-        setTimeout(() => {
-          this.shots.splice(i, 1);
-        }, 0);
-        return;
+        this.shots.splice(i, 1);
+        i--;
       } else if (
         shot.y + shot.radius <= 0 ||
         shot.y + shot.radius >= this.canvas.height
       ) {
-        setTimeout(() => {
-          this.shots.splice(i, 1);
-        }, 0);
-        return;
+        this.shots.splice(i, 1);
+        i--;
+      } else {
+        shot.update(this.delta / 1.5);
       }
-
-      shot.update(this.delta / 1.5);
-    });
+    }
   }
 
-  handleParticles() {
+  hanldeParticles() {
     for (let i = 0; i < this.particles.length; i++) {
       const particle = this.particles[i];
       particle.update(this.delta / 2);
@@ -93,9 +83,10 @@ class Game {
       const dist = Math.hypot(this.player.x - enemy.x, this.player.y - enemy.y);
       if (dist - enemy.radius - this.player.radius < 1) {
         cancelAnimationFrame(animationId);
+        const localHighScore = localStorage.getItem(HIGH_SCORE) ?? 0;
         const highScore =
-          (localStorage.getItem(HIGH_SCORE) ?? 0) > parseInt(score.textContent)
-            ? localStorage.getItem(HIGH_SCORE)
+          localHighScore > parseInt(score.textContent)
+            ? localHighScore
             : parseInt(score.textContent);
         localStorage.setItem(HIGH_SCORE, highScore);
         window.location.reload();
@@ -139,16 +130,16 @@ class Game {
 
     this.delta = time - this.prevAnimateTime;
     this.prevAnimateTime = time;
-    this.player.draw();
 
-    this.handleShots();
-    this.handleParticles();
+    this.player.draw();
     this.handlePlayer();
+    this.handleShot();
+    this.hanldeParticles();
     this.handleEnemies(animationId);
   }
 
   events() {
-    window.addEventListener("keypress", (e) => {
+    window.addEventListener("keydown", (e) => {
       if (this.keysPressed.includes(e.key)) return;
       this.keysPressed.push(e.key);
     });
@@ -169,8 +160,8 @@ class Game {
     });
 
     window.addEventListener("mouseup", () => {
-      this.mouse.isPressed = false;
       clearInterval(this.interval.mouse);
+      this.interval.mouse = null;
     });
 
     window.addEventListener("mousemove", (e) => {

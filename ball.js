@@ -128,26 +128,18 @@ export class Enemy extends Ball {
   }
 
   update(player) {
-    const atanX = player.x - this.x;
-    const atanY = player.y - this.y;
-    const angle = Math.atan2(atanX, atanY);
+    const atanX = player.y - this.y;
+    const atanY = player.x - this.x;
+    const angle = Math.atan2(atanY, atanX);
 
-    this.x += Math.sign(angle);
+    this.x += Math.sin(angle);
     this.y += Math.cos(angle);
 
     this.draw();
   }
 
-  static #randomSpawn(radius) {
-    if (Math.random() > 0.5) {
-      const min = -radius - 100;
-      const max = radius;
-      return Math.random() * (max - min) + min;
-    } else {
-      const min = radius + window.innerWidth;
-      const max = min + 100;
-      return Math.random() * (max - min) + min;
-    }
+  static #randomRadius(min, max) {
+    return Math.random() * (max - min) + min;
   }
 
   static #randomColor() {
@@ -162,8 +154,16 @@ export class Enemy extends Ball {
     return color;
   }
 
-  static #randomRadius(min, max) {
-    return Math.random() * (max - min) + min;
+  static #randomSpawn(radius) {
+    if (Math.random() > 0.5) {
+      const min = -radius - 100;
+      const max = radius;
+      return Math.random() * (max - min) + min;
+    } else {
+      const min = radius + window.innerWidth;
+      const max = min + 100;
+      return Math.random() * (max - min) + min;
+    }
   }
 
   static new(radiusMin, radiusMax, context) {
